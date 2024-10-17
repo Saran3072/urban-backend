@@ -209,6 +209,7 @@ def get_authority_dashboard():
     resolved_reports = sum(1 for report in reports_db if report.get("status") == "Resolved")
     unresolved_reports = total_reports - resolved_reports
     high_priority_reports = sum(1 for report in reports_db if report.get("seriousness") in ["High", "Critical"])
+    
 
     global_stats = GlobalStats(
         totalReports=total_reports,
