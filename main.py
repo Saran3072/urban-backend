@@ -83,7 +83,6 @@ class IssueManagementItem(BaseModel):
     id: int
     title: str
     category: str
-    date: str
     seriousness: str
     status: str
 
@@ -246,7 +245,6 @@ def get_authority_dashboard():
             id=index + 1,
             title=report['issue'],
             category=report['category'],
-            date=report['date'],
             seriousness=report.get("seriousness", "Moderate"),
             status=report.get("status", "Unresolved")
         )
