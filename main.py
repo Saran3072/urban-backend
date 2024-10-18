@@ -137,9 +137,14 @@ def submit_report(report: Report):
     if report.type == 'community' and not report.alertLevel:
         raise HTTPException(status_code=400, detail="Alert level is required for community alerts")
 
+    # Assign a new ID to the report (incrementing)
+    new_report = report.dict()
+    new_report["id"] = len(reports_db) + 1  # Generate an auto-incrementing ID
+
     # Store the report in the in-memory reports database
-    reports_db.append(report.dict())
+    reports_db.append(new_report)
     return {"message": "Report submitted successfully"}
+
 
 @app.get("/reports", response_model=List[ReportOut])
 def get_all_reports():
@@ -258,6 +263,19 @@ def get_authority_dashboard():
         issuesBySeriousness=issues_by_seriousness,
         issueList=issue_list
     )
+
+# PATCH endpoint to update the status of a report
+@app.patch("/resolve-issue/{issue_id}")
+def resolve_issue(issue_id: int):
+    # Find the issue in the reports database by ID
+    for report in reports_db:
+        if report.get("id") == issue_id:
+            report["status"] = "Resolved"
+            return {"message": "Issue resolved successfully", "issue_id": issue_id}
+    
+    # If the issue is not found
+    raise HTTPException(status_code=404, detail="Issue not found")
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
